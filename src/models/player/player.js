@@ -1,4 +1,5 @@
 import DustParticle from './vfx/dust.js';
+import { collisionManager } from '../../managers/collision.js';
 import { KICK, PARTICLES, PLAYER } from '../constants.js';
 
 export default class Player {
@@ -19,6 +20,8 @@ export default class Player {
         this.character.position = { x: 250, y: PLAYER.GROUND_POSITION };
         this.character.velocity = { x: 0, y: 0 };
 
+        this.character.prevPosition = {...this.character.position}
+
         this.kick = {
             active: true,
             forward: true,
@@ -27,6 +30,46 @@ export default class Player {
         };
 
         this.dustParticles = [];
+
+        collisionManager.register({
+
+            type: "rect",
+
+            character: this.character,
+
+            get x() { return this.character.position.x },
+            get y() { return this.character.position.y },
+            get w() { return this.character.width }, 
+            get h() { return this.character.height },
+
+            onCollision: function(collider) {
+
+                const a = this.character
+                const b = collider
+
+                if (a.position.y + a.height >= b.y && a.prevPosition.y + a.height <= b.y) {
+
+                    a.position.y = b.y - a.height
+                    a.velocity.y = 0
+                }
+                else if (a.position.y <= b.y + (b.h || b.height) && a.prevPosition.y >= b.y + (b.h || b.height)) {
+
+                    a.position.y = b.y + (b.h || b.height)
+                    a.velocity.y = 0
+                }
+
+                if (a.position.x + a.width > b.x && a.prevPosition.x + a.width <= b.x) {
+
+                    a.position.x = b.x - a.width
+                    a.velocity.x = 0
+                }
+                else if (a.position.x < b.x + (b.w || b.width) && a.prevPosition.x >= b.x + (b.w || b.width)) {
+
+                    a.position.x = b.x + (b.w || b.width)
+                    a.velocity.x = 0
+                }
+            }
+        })
     }
 
     startKick(direction = 1) {
@@ -94,29 +137,27 @@ export default class Player {
         return { cx, cy, halfW: fw / 2, halfH: fh / 2, u, v };
     }
 
+    isOnGround() {
+        return this.character.velocity.y === 0
+    }
+
     jump() {
-        if (this.character.position.y >= PLAYER.GROUND_POSITION) {
-            this.character.velocity.y = -PLAYER.JUMP_STRENGTH;
+        if (this.isOnGround()) {
+            this.character.velocity.y = -PLAYER.JUMP_STRENGTH
             this.jumpSound.play();
         }
     }
 
     updatePosition() {
+
+        this.character.prevPosition = {...this.character.position}
+
         this.character.position.x += this.character.velocity.x;
         this.character.position.y += this.character.velocity.y;
     }
 
     applyGravity() {
-        if (this.character.position.y < PLAYER.GROUND_POSITION) {
-            this.character.velocity.y += PLAYER.GRAVITY;
-        }
-    }
-
-    resetVelocityWhenGrounded() {
-        if (this.character.position.y >= PLAYER.GROUND_POSITION) {
-            this.character.position.y = PLAYER.GROUND_POSITION;
-            this.character.velocity.y = 0;
-        }
+        this.character.velocity.y += PLAYER.GRAVITY;
     }
 
     blockVelocity() {
@@ -147,7 +188,7 @@ export default class Player {
 
     createDustParticles() {
         const isMoving = Math.abs(this.character.velocity.x) > 0 || this.pads.pressed(Pads.LEFT) || this.pads.pressed(Pads.RIGHT);
-        const onGround = this.character.position.y >= PLAYER.GROUND_POSITION;
+        const onGround = this.isOnGround()
         if (!isMoving || !onGround || this.dustParticles.length >= PARTICLES.MAX_PARTICLES) return;
 
         const dir = this.pads.pressed(Pads.RIGHT) ? 'right' : 'left';
@@ -173,10 +214,6 @@ export default class Player {
 
     drawDustParticles() {
         this.dustParticles.forEach(p => p.draw());
-    }
-
-    isOnGround() {
-        return this.character.position.y >= PLAYER.GROUND_POSITION;
     }
 
     drawFootDebug() {
@@ -205,7 +242,6 @@ export default class Player {
         this.applyGravity();
         this.blockVelocity();
         this.updatePosition();
-        this.resetVelocityWhenGrounded();
         this.updateKick(dt);
         this.createDustParticles();
         this.updateDustParticles();
