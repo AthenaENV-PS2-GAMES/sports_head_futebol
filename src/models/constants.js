@@ -1,15 +1,15 @@
 export const PLAYER = {
     SPEED: 2,
-    GROUND_POSITION: 356,
+    GROUND_POSITION: 400 - 58,
     JUMP_STRENGTH: 6,
     MAX_Y_VELOCITY: 10,
     GRAVITY: 0.5
 }
 
 export const KICK = {
-    KICK_DURATION: 150,
+    KICK_DURATION: 90,
     FOOT_ANGLE_START: -90,
-    FOOT_ANGLE_END: -195,
+    FOOT_ANGLE_END: -185,
     LEG_LENGTH: 20,
     START: Math.PI,
     END: -0.5,
@@ -22,22 +22,22 @@ export const PARTICLES = {
 }
 
 export const BALL = {
-    RADIUS: 20,
-    GRAVITY: 0.4,
-    BOUNCE: 0.7,
-    FRICTION: 0.98,
-    GROUND_FRICTION: 0.95,
-    MAX_VELOCITY: 12,
-    KICK_POWER_MIN: 3,
-    KICK_POWER_MAX: 10,
-    GROUND_POSITION: 397,
+    RADIUS: 10,
+    GRAVITY: 0.08,
+    BOUNCE: 0.85,
+    FRICTION: 0.985,
+    GROUND_FRICTION: 0.88,
+    MAX_VELOCITY: 13,
+    KICK_POWER_MIN: 8,
+    KICK_POWER_MAX: 12,
+    GROUND_POSITION: 395,
 }
 
 export const COLLISION = {
     PLAYER_R: 22,
     FOOT_R: 10,
-    RESTITUTION: 0.6,
-    FOOT_RESTITUTION: 0.75,
+    RESTITUTION: 0.8,
+    FOOT_RESTITUTION: 0.8,
     MAX_STEP_FRAC: 1.8,
 }
 
