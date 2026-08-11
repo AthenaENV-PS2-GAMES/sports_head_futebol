@@ -1,27 +1,37 @@
-import Ball from "./src/models/ball/ball.js";
-import Player from "./src/models/player/player.js";
+import Goal from "./src/models/goal/index.js";
+import { ASSETS_PATH, SCREEN_HEIGHT, SCREEN_WIDTH } from "./src/shared/config/constants.js";
+import Assets from "./src/shared/lib/assets.js";
 
-const background = new Image('./assets/background.png')
-// const shadow = new Image('./assets/shadow.png')
-const goal = new Image('./assets/objects/goal.png')
+const background = Assets.image(ASSETS_PATH.MAPS + "/main.png");
+background.width = SCREEN_WIDTH;
+background.height = SCREEN_HEIGHT;
 
-const player = new Player(0, 1)
-const ball = new Ball();
+const shape = Assets.image(ASSETS_PATH.SHAPES + "/374.png");
+shape.width = SCREEN_WIDTH;
+shape.height = SCREEN_HEIGHT;
+
+const groundBlock = Assets.image(ASSETS_PATH.SHAPES + "/94.png");
+groundBlock.width = SCREEN_WIDTH + 120;
+groundBlock.y = SCREEN_HEIGHT - (groundBlock.height - 10);
+
+const goal  = new Goal({ facingLeft: false });
+const goal2 = new Goal({ facingLeft: true });
+
+const pads = Pads.get(0);
 
 Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
+
 Screen.display(() => {
-    background.draw(0, 0)
-    // shadow.draw(0, 0)
+    pads.update();
 
-    const dt = 16; // ms
-    ball.update(dt);
-    player.update(dt);
-    ball.checkPlayerCollision(player);
-    ball.checkFootCollision(player);
+    background.draw(0, 0);
+    shape.draw(0, 0);
+    groundBlock.draw(0, groundBlock.y);
 
-    goal.width = 62;
-    goal.draw(0, 356 - (goal.height / 2 + 5));
-    goal.width = -Math.abs(goal.width)
-    goal.draw(640, 356 - (goal.height / 2 + 5));
+    if (pads.pressed(Pads.CROSS)) {
+        goal2.setSize("BIG");
+    }
 
-})
+    goal2.draw(SCREEN_WIDTH - goal2.width, groundBlock.y - (goal2.height - 5));
+    goal.draw(0, groundBlock.y - (goal.height - 5));
+});
