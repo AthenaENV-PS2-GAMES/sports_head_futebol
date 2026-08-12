@@ -1,5 +1,5 @@
 import { BOX2D_SCALE } from "../../shared/config/constants.js";
-import { worldToPixelY } from "../../shared/lib/utils.js";
+import { normalizeAngle, worldToPixelY } from "../../shared/lib/utils.js";
 
 function PlayerRenderer(options) {
   this.physics = options.physics;
@@ -14,28 +14,29 @@ PlayerRenderer.prototype.draw = function () {
   const footPos = this.physics.getFootPosition();
   const jointAngle = this.physics.getJointAngle();
 
+  const headFlipX = this.facingLeft
+    ? { startx: this.headImage.width, endx: 0 }
+    : { startx: 0, endx: this.headImage.width };
+
   const hx = headPos.x * BOX2D_SCALE - this.headImage.width / 2;
   const hy = worldToPixelY(headPos.y) - this.headImage.height / 2;
-  this.headImage.draw(hx, hy);
+  this.headImage.draw(hx, hy, {...headFlipX});
 
   const fx = footPos.x * BOX2D_SCALE - this.feetImage.width / 2;
   const fy = worldToPixelY(footPos.y) - this.feetImage.height / 2;
 
-  const facingLeft = true;
-  const facingUp = true;
+  const feetFlipX = this.facingLeft
+      ? { startx: 0, endx: this.feetImage.width }
+      : { startx: this.feetImage.width, endx: 0 };
 
-  const flipX = facingLeft
-      ? { startx: this.feetImage.width, endx: 0 }
-      : { startx: 0, endx: this.feetImage.width };
-
-  const flipY = facingUp
-      ? { starty: this.feetImage.height, endy: 0 }
-      : { starty: 0, endy: this.feetImage.height };
+  const feetFlipY = this.facingLeft
+      ? { starty: 0, endy: this.feetImage.height }
+      : { starty: this.feetImage.height, endy: 0 };
 
   this.feetImage.draw(fx, fy, {
     angle: -jointAngle,
-    ...flipX,
-    ...flipY
+    ...feetFlipX,
+    ...feetFlipY
   });
 }
 

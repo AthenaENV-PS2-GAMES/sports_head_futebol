@@ -6,7 +6,9 @@ import PlayerController from "./controller.js";
 
 function Player(world, options) {
     this.head = Assets.image(ASSETS_PATH.CHARACTERS + "/heads/1.png");
-    this.feet = Assets.image(ASSETS_PATH.CHARACTERS + "/feets/right_feet.png");
+
+    const feetFile = options.facingLeft ? "/feets/left_feet.png": "/feets/right_feet.png"
+    this.feet = Assets.image(ASSETS_PATH.CHARACTERS + feetFile);
 
     this.physics = new PlayerPhysics(world, {
         ...options,

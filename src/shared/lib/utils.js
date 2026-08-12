@@ -12,9 +12,16 @@ function worldToPixelY(worldY) {
     return SCREEN_HEIGHT - worldY * BOX2D_SCALE;
 }
 
-
 function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
 }
 
-export { pixelToWorldY, pixelToWorldX, worldToPixelY, clamp }
+function normalizeAngle(angle) {
+    const twoPi = Math.PI * 2;
+    angle = angle % twoPi;
+    if (angle > Math.PI) angle -= twoPi;
+    if (angle < -Math.PI) angle += twoPi;
+    return angle;
+}
+
+export { pixelToWorldY, pixelToWorldX, worldToPixelY, clamp, normalizeAngle }

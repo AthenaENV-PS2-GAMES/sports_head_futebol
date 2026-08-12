@@ -1,5 +1,5 @@
 import { BOX2D_SCALE, CATEGORY_FOOT, CATEGORY_GROUND } from "../../shared/config/constants.js";
-import { clamp, pixelToWorldY } from "../../shared/lib/utils.js";
+import { clamp, normalizeAngle, pixelToWorldY } from "../../shared/lib/utils.js";
 import { FOOT_MAX_TORQUE, FOOT_ORBIT_PADDING, FOOT_PLACEMENT_ANGLE, KICK_ANGLE, KICK_GAIN, MAX_MOTOR_SPEED, REST_ANGLE, RETURN_GAIN } from "./constants.js";
 
 function PlayerPhysics(world, options) {
@@ -18,14 +18,16 @@ function PlayerPhysics(world, options) {
         y: this.startY
     };
 
-    this.targetAngle = REST_ANGLE;
+    this.targetAngle = this.mirror(REST_ANGLE);
     this.gain = RETURN_GAIN;
 
     this.createBodies();
     this.createJoint();
 }
 
-PlayerPhysics.prototype.mirror = function (angle) { return this.facingLeft ? Math.PI - angle : angle};
+PlayerPhysics.prototype.mirror = function (angle) {
+    return this.facingLeft ? normalizeAngle(Math.PI - angle) : angle;
+};
 
 PlayerPhysics.prototype.createBodies = function () {
     // head body
@@ -44,14 +46,14 @@ PlayerPhysics.prototype.createBodies = function () {
         friction: 0.3
     });
 
-    const footStartX = this.anchor.x + Math.cos(FOOT_PLACEMENT_ANGLE) * this.footOrbitRadius;
-    const footStartY = this.anchor.y + Math.sin(FOOT_PLACEMENT_ANGLE) * this.footOrbitRadius;
+    const footStartX = this.anchor.x + Math.cos(this.mirror(FOOT_PLACEMENT_ANGLE)) * this.footOrbitRadius;
+    const footStartY = this.anchor.y + Math.sin(this.mirror(FOOT_PLACEMENT_ANGLE)) * this.footOrbitRadius;
 
     // foot body
     this.footBody = this.world.createBody({
         type: Box2D.DYNAMIC_BODY,
         position: { x: footStartX, y: footStartY },
-        angle: REST_ANGLE,
+        angle: this.mirror(REST_ANGLE),
         gravityScale: 0,
         linearDamping: 0.5,
         angularDamping: 0.5,
@@ -84,7 +86,7 @@ PlayerPhysics.prototype.createJoint = function () {
 }
 
 PlayerPhysics.prototype.setKicking = function (isKicking) {
-    this.targetAngle = isKicking ? KICK_ANGLE : REST_ANGLE;
+    this.targetAngle = isKicking ? this.mirror(KICK_ANGLE) : this.mirror(REST_ANGLE);
     this.gain = isKicking ? KICK_GAIN : RETURN_GAIN;
 }
 
