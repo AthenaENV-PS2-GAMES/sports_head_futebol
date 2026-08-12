@@ -1,6 +1,6 @@
 import Goal from "./src/features/goal/index.js";
 import Player from "./src/features/player/index.js";
-import { ASSETS_PATH, BOX2D_SCALE, CATEGORY_GROUND, SCREEN_HEIGHT, SCREEN_WIDTH } from "./src/shared/config/constants.js";
+import { ASSETS_PATH, BOX2D_SCALE, CATEGORY_GROUND, PLAYER_ONE_PORT, PLAYER_TWO_PORT, SCREEN_HEIGHT, SCREEN_WIDTH } from "./src/shared/config/constants.js";
 import Assets from "./src/shared/lib/assets.js";
 import Gamepad from "./src/shared/lib/gamepad.js";
 import { pixelToWorldX, pixelToWorldY } from "./src/shared/lib/utils.js";
@@ -45,21 +45,13 @@ groundBody.createBoxShape({
 const goal = new Goal({ facingLeft: false });
 const goal2 = new Goal({ facingLeft: true });
 
-const player1 = new Player(world, { x: 100, y: 100 });
+const player1 = new Player(world, { x: 100, y: 100, playerPort: PLAYER_ONE_PORT, facingLeft: false});
+const player2 = new Player(world, { x: 300, y: 100, playerPort: PLAYER_TWO_PORT, facingLeft: true})
 const pad = Pads.get(0);
 
 Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
 Screen.display(() => {
     Gamepad.update();
-
-    if (Gamepad.player(0).pressed(Pads.CROSS)){
-        player1.setKicking(true);
-    } else{
-        player1.setKicking(false);
-    }
-    
-    player1.update();
-
     world.step(1 / 60);
 
     background.draw(0, 0);
@@ -76,5 +68,6 @@ Screen.display(() => {
         groundBlock.y - (goal.height - 5)
     );
 
-    player1.draw();
+    player1.update();
+    player2.update();
 });
