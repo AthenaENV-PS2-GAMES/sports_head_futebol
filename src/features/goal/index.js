@@ -3,9 +3,7 @@ import { animationSprite, setAnimation } from "../../shared/lib/animation.js";
 import Assets from "../../shared/lib/assets.js";
 
 function Goal(options = {}) {
-    this.x = 0;
-    this.y = 0;
-    this.facingLeft = options.facingLeft ?? false;
+    this.facingLeft = options?.facingLeft ?? false;
 
     this.animation = {
         currentAnimation: null,
@@ -72,7 +70,7 @@ Goal.prototype.draw = function (x, y) {
     this.width = render.width;
     this.height = render.height;
 
-    this.spritesheet.drawEx(this.x, this.y, {
+    this.spritesheet.draw(this.x, this.y, {
         width:  render.width,
         height: render.height,
         startx: render.startx,
