@@ -3,71 +3,95 @@ import Player from "../../player/index.js";
 import { ASSETS_PATH, BOX2D_SCALE, CATEGORY_GROUND, PLAYER_ONE_PORT, PLAYER_TWO_PORT, SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../shared/config/constants.js";
 import Assets from "../../../shared/lib/assets.js";
 import Gamepad from "../../../shared/lib/gamepad.js";
+import Physics from "../../../shared/lib/physics.js";
 import { pixelToWorldX, pixelToWorldY } from "../../../shared/lib/utils.js";
+import { Scene } from "../../../shared/lib/scene_manager.js";
 
-const background = Assets.image(ASSETS_PATH.MAPS + "/main.png");
-background.width = SCREEN_WIDTH;
-background.height = SCREEN_HEIGHT;
+export default class GameScene extends Scene {
+    static assetRoot = "assets";
 
-const shape = Assets.image(ASSETS_PATH.SHAPES + "/374.png");
-shape.width = SCREEN_WIDTH;
-shape.height = SCREEN_HEIGHT;
-
-const world = Box2D.createWorld({ gravity: { x: 0, y: -9.8 } });
-
-const groundBlock = Assets.image(ASSETS_PATH.SHAPES + "/94.png");
-groundBlock.width = SCREEN_WIDTH + 120;
-groundBlock.y = SCREEN_HEIGHT - (groundBlock.height - 10);
-
-const groundWidthWorld = SCREEN_WIDTH / BOX2D_SCALE;
-const groundTopYWorld = pixelToWorldY(groundBlock.y + 5);
-const groundThicknessWorld = 1;
-
-const groundBody = world.createBody({
-    type: Box2D.STATIC_BODY,
-    position: {
-        x: groundWidthWorld / 2,
-        y: groundTopYWorld - groundThicknessWorld / 2
+    manifest() {
+        return {
+            images: [
+                { path: "images/maps/main.png" },
+                { path: "images/shapes/374.png" },
+                { path: "images/shapes/94.png" },
+            ]
+        }
     }
-});
 
-groundBody.createBoxShape({
-    halfWidth: groundWidthWorld / 2,
-    halfHeight: groundThicknessWorld / 2,
-    friction: 0.8,
-    density: 0,
-    filter: {
-        categoryBits: CATEGORY_GROUND,
-        maskBits: 0xFFFF
+    onEnter(assets) {
+        this.background = assets.images["images/maps/main.png"]
+        this.background.width = SCREEN_WIDTH;
+        this.background.height = SCREEN_HEIGHT;
+
+        this.shape = assets.images["images/shapes/374.png"]
+        this.shape.width = SCREEN_WIDTH;
+        this.shape.height = SCREEN_HEIGHT;
+
+        this.groundBlock = assets.images["images/shapes/94.png"];
+        this.groundBlock.width = SCREEN_WIDTH + 120;
+        this.groundBlock.y = SCREEN_HEIGHT - (this.groundBlock.height - 10);
+
+        this.groundWidthWorld = SCREEN_WIDTH / BOX2D_SCALE;
+        this.groundTopYWorld = pixelToWorldY(this.groundBlock.y + 5);
+        this.groundThicknessWorld = 1;
+
+        this.goal = new Goal({ facingLeft: false });
+        this.goal2 = new Goal({ facingLeft: true });
+
+        this.player1 = new Player({ x: 100, y: 100, playerPort: PLAYER_ONE_PORT, facingLeft: false });
+        this.player2 = new Player({ x: 300, y: 100, playerPort: PLAYER_TWO_PORT, facingLeft: true })
+
+        const ground = Physics.createBody({
+            type: Box2D.STATIC_BODY,
+            position: {
+                x: this.groundWidthWorld / 2,
+                y: this.groundTopYWorld - this.groundThicknessWorld / 2
+            },
+            userData: { type: "ground" }
+        });
+
+        this.groundBodyId = ground.id;
+        this.groundBody = ground.body;
+
+        this.groundBody.createBoxShape({
+            halfWidth: this.groundWidthWorld / 2,
+            halfHeight: this.groundThicknessWorld / 2,
+            friction: 0.8,
+            density: 0,
+            filter: {
+                categoryBits: CATEGORY_GROUND,
+                maskBits: 0xFFFF
+            },
+            enableContactEvents: true
+        });
     }
-});
 
-const goal = new Goal({ facingLeft: false });
-const goal2 = new Goal({ facingLeft: true });
+    onDraw() {
+        Physics.step(1 / 60);
 
-const player1 = new Player(world, { x: 100, y: 100, playerPort: PLAYER_ONE_PORT, facingLeft: false});
-const player2 = new Player(world, { x: 300, y: 100, playerPort: PLAYER_TWO_PORT, facingLeft: true})
-const pad = Pads.get(0);
+        this.background.draw(0, 0);
+        this.shape.draw(0, 0);
+        this.groundBlock.draw(0, this.groundBlock.y);
 
-Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
-Screen.display(() => {
-    Gamepad.update();
-    world.step(1 / 60);
+        this.player1.update();
+        this.player2.update();
 
-    background.draw(0, 0);
-    shape.draw(0, 0);
-    groundBlock.draw(0, groundBlock.y);
+        this.goal2.draw(
+            SCREEN_WIDTH - this.goal2.width,
+            this.groundBlock.y - (this.goal2.height - 5)
+        );
 
-    goal2.draw(
-        SCREEN_WIDTH - goal2.width,
-        groundBlock.y - (goal2.height - 5)
-    );
+        this.goal.draw(
+            0,
+            this.groundBlock.y - (this.goal.height - 5)
+        );
+    }
 
-    goal.draw(
-        0,
-        groundBlock.y - (goal.height - 5)
-    );
-
-    player1.update();
-    player2.update();
-});
+    onExit() {
+        this.player1?.destroy();
+        this.player2?.destroy();
+        Physics.clearLevel();
+    }
+}

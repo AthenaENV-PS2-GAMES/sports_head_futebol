@@ -4,44 +4,74 @@ import PlayerRenderer from "./renderer.js";
 import PlayerPhysics from "./physics.js";
 import PlayerController from "./controller.js";
 
-function Player(world, options) {
-    this.head = Assets.image(ASSETS_PATH.CHARACTERS + "/heads/1.png");
+class Player {
+    constructor(options) {
+        this.head = Assets.image(ASSETS_PATH.CHARACTERS + "/heads/1.png");
 
-    const feetFile = options.facingLeft ? "/feets/left_feet.png": "/feets/right_feet.png"
-    this.feet = Assets.image(ASSETS_PATH.CHARACTERS + feetFile);
+        const feetFile = options.facingLeft ? "/feets/left_feet.png" : "/feets/right_feet.png";
+        this.feet = Assets.image(ASSETS_PATH.CHARACTERS + feetFile);
 
-    this.physics = new PlayerPhysics(world, {
-        ...options,
-        headRadius: (this.head.width / 2) / BOX2D_SCALE,
-        footRadius: (this.feet.width / 2) / BOX2D_SCALE
-    });
-    this.renderer = new PlayerRenderer({
-        ...options,
-        physics: this.physics,
-        headImage: this.head,
-        feetImage: this.feet
-    });
-    this.controller = new PlayerController(options)
+        this.physics = new PlayerPhysics({
+            ...options,
+            headRadius: (this.head.width / 2) / BOX2D_SCALE,
+            footRadius: (this.feet.width / 2) / BOX2D_SCALE
+        });
+        this.renderer = new PlayerRenderer({
+            ...options,
+            physics: this.physics,
+            headImage: this.head,
+            feetImage: this.feet
+        });
+        this.controller = new PlayerController(this, options.playerPort);
 
-}
+        this.sfxJump = Assets.sound(ASSETS_PATH.SOUNDS + "/sfx/jump.adp");
 
-Player.prototype.setKicking = function (isKicking) {
-    this.physics.setKicking(isKicking);
-}
+    }
+    setKicking(isKicking) {
+        this.physics.setKicking(isKicking);
+    }
 
-Player.prototype.update = function () {
-    if (this.controller.kick()) {
+    move(dirX) {
+        if (this.isBlocking) {
+            this.physics.moveHorizontally(0);
+            return;
+        }
+
+        this.physics.moveHorizontally(dirX);
+    }
+
+    jump() {
+        this.physics.jump();
+
+        if (this.sfxJump && !this.sfxJump.playing() && this.isGrounded()) {
+            this.sfxJump.play();
+        }
+    }
+
+    isGrounded() {
+        return this.physics.isGrounded();
+    }
+
+
+    startKick() {
         this.setKicking(true);
-    } else {
+    }
+
+    stopKicking() {
         this.setKicking(false);
     }
 
-    this.physics.update();
-    this.renderer.draw();
-}
-
-Player.prototype.drawDebug = function () {
-    this.renderer.drawDebug();
+    update() {
+        this.controller.update();
+        this.physics.update();
+        this.renderer.draw();
+    }
+    drawDebug() {
+        this.renderer.drawDebug();
+    }
+    destroy() {
+        this.physics.destroy();
+    }
 }
 
 export default Player;

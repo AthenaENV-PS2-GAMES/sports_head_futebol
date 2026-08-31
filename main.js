@@ -2,6 +2,7 @@ import LoadingScreen from "./src/features/Scenes/loading.js";
 import { SceneManager } from "./src/shared/lib/scene_manager.js";
 import Gamepad from "./src/shared/lib/gamepad.js";
 import MenuFlow from "./src/features/Scenes/Menu/flow.js";
+import physics from "./src/shared/lib/physics.js";
 
 const loadingScreen = new LoadingScreen();
 const manager = new SceneManager({
@@ -12,6 +13,7 @@ const manager = new SceneManager({
 
 manager.goto(MenuFlow);
 let lastFrameTime = Date.now();
+physics.toggleDebug();
 
 Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
 Screen.display(() => {
@@ -23,4 +25,5 @@ Screen.display(() => {
 
     manager.update(deltaTime);
     manager.draw();
+    // physics.renderDebug();
 })

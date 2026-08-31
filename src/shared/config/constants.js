@@ -20,6 +20,9 @@ export const PLAYER_ONE_PORT = 0;
 export const PLAYER_TWO_PORT = 1;
 
 export const BOX2D_SCALE = 30;
+export const GAME_SCALE = 1;
+export const GAME_GRAVITY = -9.8;
+
 export const CATEGORY_GROUND = 0x0001;
 export const CATEGORY_HEAD = 0x0002;
 export const CATEGORY_FOOT = 0x0004;

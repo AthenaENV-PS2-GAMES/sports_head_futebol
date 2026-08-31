@@ -1,4 +1,5 @@
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../shared/config/constants.js";
+import GameScene from "../game/game.js";
 import { MenuFlowScene } from "./scene.js";
 
 export default class MenuFlow extends MenuFlowScene {
@@ -30,7 +31,7 @@ export default class MenuFlow extends MenuFlowScene {
         return {
             main: {
                 getOptions: (scene) => [
-                    { key: "New Game", action: () => {/**scene.manager.goto(GameScene) **/ } },
+                    { key: "New Game", action: () => scene.manager.goto(GameScene) },
                     { key: "Continue Game", action: () => { /**Carregar jogo */ } },
                     { key: "2 Player", action: () => { } },
                     { key: "Instructions", action: () => { } },
@@ -53,9 +54,9 @@ export default class MenuFlow extends MenuFlowScene {
 
     onEnter(assets) {
         super.onEnter(assets);
-        this.bg = assets.sounds["sounds/bg.wav"];
-        this.bg.loop = true;
-        this.bg.play();
+        this.bgSound = assets.sounds["sounds/bg.wav"];
+        this.bgSound.loop = true;
+        this.bgSound.play();
 
         this.groundBlock = assets.images["images/shapes/94.png"];
         this.groundBlock.width = SCREEN_WIDTH + 160;
@@ -74,6 +75,8 @@ export default class MenuFlow extends MenuFlowScene {
     }
 
     onExit() {
-        this.bg.pause();
+        if(this.bgSound){
+            this.bgSound.pause();
+        }
     }
 }

@@ -6,3 +6,6 @@ export const KICK_GAIN = 12;
 export const MAX_MOTOR_SPEED = 15;
 export const FOOT_MAX_TORQUE = 1000000000;
 export const FOOT_ORBIT_PADDING = -0.3;
+
+export const X_SPEED = 3;
+export const JUMP_FORCE = -6;
