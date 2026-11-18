@@ -1,0 +1,97 @@
+Sports Heads Football - PS2 / AthenaENV
+=======================================
+
+This is an unofficial, non-profit fan port. It is not affiliated with,
+endorsed by or sponsored by Mousebreaker, kChamp or any other rights holder.
+
+Scope of the LICENSE file
+-------------------------
+
+The MIT license in LICENSE covers only the original source code and text
+written for this port: main.js, game/ (except game/art.js and game/levels.js,
+which are generated from the original game's data), tests/, the scripts in
+tools/, and the text of README.md and docs/.
+
+It does not cover the third-party material listed below.
+
+Original game
+-------------
+
+Sports Heads Football is a game by Mousebreaker / kChamp. The graphics,
+animations, sound effects, texts and level layouts used by this port were
+extracted or derived from the original Flash (SWF) release, including:
+
+  assets/flash/      artwork and animation frames
+  assets/audio/      sound effects and music
+  assets/save/       memory card icon, built from the default head sprite
+  game/art.js        sprite metadata
+  game/levels.js     level layouts
+  tools/blender/head1_contour.json, tools/blender/icon-texture.png
+                     contour and texture cut from the default head sprite
+  tools/icon_mesh.json  mesh extruded from that contour
+  docs/screenshots/, docs/source-evidence.json
+                     captures and an inventory that show or derive from the
+                     original game
+
+All rights to this material remain with their owners. It is included only so
+the port can run, and no ownership of it is claimed. The original SWF is not
+distributed. SHA-256 of the release this port was built from:
+d1d3c94dff217f402c26e06e386ed3d831055ebdd58c4ee12d8e81d02347554e
+
+If you are a rights holder and want any of this material removed, please open
+an issue and it will be taken down.
+
+Music
+-----
+
+The in-game music is credited to Hades ("Music by Hades"), as shown by the
+original game.
+
+Font
+----
+
+assets/fonts/main.ttf is the "Info Text Semibold Caps" typeface embedded in the
+original SWF. Copyright Ole Schaefer, Erik Spiekermann 1996-2000, published by
+FontShop International for FontFont. It is not covered by the LICENSE file.
+
+AthenaENV
+---------
+
+athena.elf is a build of AthenaENV, the JavaScript runtime for the PlayStation
+2, with the modules listed in docs/Makefile.modules. Reference checkout:
+commit c04434bdb51e9d6141c61a953ce9e8a81273eb8f (2026-10-28).
+
+AthenaENV is distributed under the MIT License:
+
+  MIT License
+
+  Copyright (c) 2025 Daniel Santos
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+The binary also contains components that AthenaENV bundles, each under its own
+license, including QuickJS (MIT), Box2D (MIT) and the PS2SDK (AFL-3.0). See
+the AthenaENV repository for the complete list.
+
+Tools used to build the assets
+------------------------------
+
+JPEXS Free Flash Decompiler (extraction of the SWF), Pillow, librsvg, FFmpeg
+and Blender were used to produce the assets. None of them is distributed with
+this repository.

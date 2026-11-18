@@ -1,1 +1,10 @@
+/reference
+/analysis
+/dist
 /decompiler
+__pycache__/
+
+*.swf
+
+/assets/audio/*.wav
+!/assets/audio/music.wav
